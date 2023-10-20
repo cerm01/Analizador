@@ -68,7 +68,7 @@ class Sintactico(object):
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setFixedSize(980, 650)
+        self.setFixedSize(1200, 650)
         self.setWindowTitle("Analizador léxico y sintáctico")
 
         self.tablaResultados = QTableWidget(self)
