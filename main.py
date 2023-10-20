@@ -27,37 +27,25 @@ class Lexico(object):
     def obtenerdescripcion(self):
         return self.tipo
 
-class Lexico(object):
-    def __init__(self, cadena, id, tipo, valor=None):
-        self.cadena = cadena
-        self.token = id
-        self.tipo = tipo
-        self.valor = valor
-
-    def __str__(self):
-        return f"{self.cadena}  {self.token}"
-
-    def obtenercadena(self):
-        return self.cadena
-
-    def obtenertoken(self):
-        return self.token
-
-    def obtenerdescripcion(self):
-        return self.tipo
-
-    def obtenervalor(self):
-        return self.valor
-
-
 class Sintactico(object):
     def __init__(self, listaLexico):
         self.listaLexico = listaLexico
         self.posicion = 0
         self.error = False
+        self.errores = [];
+    
+    def agregar_error(self, mensaje):
+        self.errores.append(mensaje)
 
     def analizar(self):
         while self.posicion < len(self.listaLexico):
+            print(f"Sintatico: {self.listaLexico[self.posicion].obtenercadena(), self.listaLexico[self.posicion].obtenertoken()}")
+            print(f"Posicion: {self.posicion}")
+            print(f"TOtal: {len(self.listaLexico)}")
+
+            if self.error:
+                return
+            
             if self.listaLexico[self.posicion].obtenercadena() in ["int", "float", "char", "void"]:
                 self.declaracion_variable()
             elif self.listaLexico[self.posicion].obtenercadena() == "if":
@@ -66,9 +54,14 @@ class Sintactico(object):
                 self.analizar_bucle()
             elif self.listaLexico[self.posicion].obtenertoken() == 1:  # ID
                 self.analizar_expresion()
+            elif (self.listaLexico[self.posicion].obtenertoken() == 2 and self.posicion == len(self.listaLexico) - 1):  # ";" (fin de instrucción)
+                print("Análisis sintáctico completado sin errores.")
+                self.agregar_error("Análisis sintáctico completado sin errores.")
+                return
             else:
                 self.error = True
                 print("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
+                self.agregar_error("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
 
     def avanzar(self):
         self.posicion += 1
@@ -87,6 +80,7 @@ class Sintactico(object):
                 valor_esperado = ";"
             row = 0
             print(f"Error de sintaxis. Se esperaba '{valor_esperado}' en lugar de '{self.listaLexico[self.posicion].obtenercadena()}'")
+            self.agregar_error(f"Error de sintaxis. Se esperaba '{valor_esperado}' en lugar de '{self.listaLexico[self.posicion].obtenercadena()}'")
 
     def declaracion_variable(self):
         tipo_dato = self.listaLexico[self.posicion].obtenercadena()
@@ -100,9 +94,11 @@ class Sintactico(object):
             self.emparejar(2)  # ";"
             if valor is not None:
                 print(f"Declaración de variable con inicialización válida: {tipo_dato} {nombre_variable} = {valor};")
+                self.agregar_error(f"Declaración de variable con inicialización válida: {tipo_dato} {nombre_variable} = {valor};")
         else:
             self.emparejar(2)  # ";"
             print(f"Declaración de variable sin inicialización válida: {tipo_dato} {nombre_variable};")
+            self.agregar_error(f"Declaración de variable sin inicialización válida: {tipo_dato} {nombre_variable};")
 
     def analizar_expresion(self):
         pila_operadores = []
@@ -113,7 +109,7 @@ class Sintactico(object):
                 pila_operandos.append(self.listaLexico[self.posicion].obtenercadena())
                 self.avanzar()
             elif self.listaLexico[self.posicion].obtenertoken() == 13:  # Constante
-                pila_operandos.append(self.listaLexico[self.posicion].obtenervalor())
+                pila_operandos.append(self.listaLexico[self.posicion].obtenercadena())
                 self.avanzar()
             elif self.listaLexico[self.posicion].obtenertoken() in [14, 16]:  # Operadores de suma o multiplicación
                 while pila_operadores and pila_operadores[-1] in ['+', '-', '*', '/'] and self.precedencia(
@@ -144,14 +140,17 @@ class Sintactico(object):
                     pila_operandos.append(f"({operand1} {operador} {operand2})")
                 if len(pila_operandos) == 1:
                     resultado = pila_operandos[0]
+                    print(f"Expresión matemática válida: {resultado};")
                     return resultado
                 else:
                     self.error = True
                     print("Error de sintaxis en la expresión matemática.")
+                    self.agregar_error("Error de sintaxis en la expresión matemática.")
                     return None
             else:
                 self.error = True
                 print("Error de sintaxis en la expresión matemática.")
+                self.agregar_error("Error de sintaxis en la expresión matemática.")
                 return None
 
     def precedencia(self, operador):
@@ -166,6 +165,7 @@ class Sintactico(object):
         self.emparejar(4)  # "("
         self.analizar_expresion()
         self.emparejar(5)  # ")"
+        print("Análisis de estructura condicional.")
         # Implementa el análisis del bloque de código dentro del if
 
     def analizar_bucle(self):
@@ -173,56 +173,8 @@ class Sintactico(object):
         self.emparejar(4)  # "("
         self.analizar_expresion()
         self.emparejar(5)  # ")"
+        print("Análisis de estructura de bucle.")
         # Implementa el análisis del bloque de código dentro del while
-
-    def analizar_expresion(self):
-        # Implementa el análisis de expresiones lógicas
-        pass
-
-# Función para validar y analizar el código
-def analizar_codigo(codigo):
-    listaLexico = []
-
-    i = 0
-    size = len(codigo)
-    cadenaTemp = ""
-
-    while i < size:
-        cadenaTemp = ""
-        while i < size and (codigo[i].isalpha() or codigo[i].isdigit()):
-            cadenaTemp += codigo[i]
-            i += 1
-        if cadenaTemp:
-            if cadenaTemp in ["int", "float", "char", "void", "if", "while"]:
-                listaLexico.append(Lexico(cadenaTemp, 0, "Palabra reservada"))
-            else:
-                listaLexico.append(Lexico(cadenaTemp, 1, "ID"))
-        if i < size and codigo[i] == "=":
-            listaLexico.append(Lexico("=", 8, "Asignación"))
-            i += 1
-        if i < size and codigo[i].isdigit():
-            cadenaTemp = ""
-            while i < size and codigo[i].isdigit():
-                cadenaTemp += codigo[i]
-                i += 1
-            listaLexico.append(Lexico(cadenaTemp, 13, "Constante", cadenaTemp))
-        if i < size and codigo[i] in "+-*/":
-            listaLexico.append(Lexico(codigo[i], 14, "Operador matemático"))
-            i += 1
-        if i < size and codigo[i] in "()":
-            listaLexico.append(Lexico(codigo[i], 4 if codigo[i] == "(" else 5, "Paréntesis"))
-            i += 1
-        if i < size and codigo[i] == ";":
-            listaLexico.append(Lexico(";", 2, "Punto y coma"))
-            i += 1
-
-    analizador_sintactico = Sintactico(listaLexico)
-    analizador_sintactico.analizar()
-
-    if not analizador_sintactico.error:
-        print("Análisis sintáctico completado sin errores.")
-    else:
-        print("Error de sintaxis en el código.")
 
 
 class MainWindow(QMainWindow):
@@ -424,10 +376,15 @@ class MainWindow(QMainWindow):
 
         # Luego, iniciamos el análisis sintáctico
         analizador_sintactico = Sintactico(listaLexico)
+        print("Iniciando análisis sintáctico...") 
         analizador_sintactico.analizar()
 
         if not analizador_sintactico.error:
             print("Análisis sintáctico completado sin errores.")
+
+        print("Errores sintácticos:")
+        for error in analizador_sintactico.errores:
+            print(error)
 
 
 if __name__ == "__main__":
