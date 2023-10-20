@@ -83,20 +83,27 @@ class MainWindow(QMainWindow):
         __qtablewidgetitem = QTableWidgetItem("DESCRIPCIÓN")
         self.tablaResultados.setHorizontalHeaderItem(2, __qtablewidgetitem)
 
-        self.tablaResultados.setColumnWidth(0, 149)
-        self.tablaResultados.setColumnWidth(1, 149)
-        self.tablaResultados.setColumnWidth(2, 219)
-        self.tablaResultados.setGeometry(QRect(20, 310, 520, 300))
+        self.tablaResultados.setColumnWidth(0, 170)
+        self.tablaResultados.setColumnWidth(1, 170)
+        self.tablaResultados.setColumnWidth(2, 227)
+        self.tablaResultados.setGeometry(QRect(20, 310, 570, 300))
 
         self.inputTexto = QTextEdit(self)
         self.inputTexto.setGeometry(QRect(20, 20, 1160, 200))
-
         font = QFont()
         font.setPointSize(15)
         self.inputTexto.setFont(font)
 
         self.boton = QPushButton("VALIDAR", self)
         self.boton.setGeometry(QRect(550, 240, 100, 50))
+
+        
+        #Genera un cuadro en el punto 600, 310 con un tamaño de 570, 300 para salida de texto
+        self.inputTexto_2 = QTextEdit(self)
+        self.inputTexto_2.setGeometry(QRect(600, 310, 570, 300))
+        font = QFont()
+        font.setPointSize(15)
+        self.inputTexto_2.setFont(font)
 
         """
         self.inputTexto_2 = QTextEdit(self)
