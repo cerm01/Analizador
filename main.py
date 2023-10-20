@@ -180,7 +180,7 @@ class Sintactico(object):
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setFixedSize(980, 650)
+        self.setFixedSize(1200, 650)
         self.setWindowTitle("Analizador léxico y sintáctico")
 
         self.tablaResultados = QTableWidget(self)
@@ -195,31 +195,34 @@ class MainWindow(QMainWindow):
         __qtablewidgetitem = QTableWidgetItem("DESCRIPCIÓN")
         self.tablaResultados.setHorizontalHeaderItem(2, __qtablewidgetitem)
 
-        self.tablaResultados.setColumnWidth(0, 451)
-        self.tablaResultados.setColumnWidth(1, 89)
-        self.tablaResultados.setColumnWidth(2, 360)
-        self.tablaResultados.setGeometry(QRect(20, 300, 940, 340))
+        self.tablaResultados.setColumnWidth(0, 165)
+        self.tablaResultados.setColumnWidth(1, 165)
+        self.tablaResultados.setColumnWidth(2, 180)
+        self.tablaResultados.setGeometry(QRect(20, 310, 560, 300))
 
         self.inputTexto = QTextEdit(self)
-        self.inputTexto.setGeometry(QRect(40, 20, 380, 250))
-
+        self.inputTexto.setGeometry(QRect(20, 20, 1160, 200))
         font = QFont()
         font.setPointSize(15)
         self.inputTexto.setFont(font)
 
         self.boton = QPushButton("VALIDAR", self)
-        self.boton.setGeometry(QRect(440, 125, 100, 50))
+        self.boton.setGeometry(QRect(550, 240, 100, 50))
 
-        """
+        
+        #Genera un cuadro en el punto 600, 310 con un tamaño de 570, 300 para salida de texto
         self.inputTexto_2 = QTextEdit(self)
-        self.inputTexto_2.setGeometry(QRect(560, 20, 380, 250))
+        self.inputTexto_2.setGeometry(QRect(610, 310, 560, 300))
         font = QFont()
         font.setPointSize(15)
         self.inputTexto_2.setFont(font)
-        """
+        self.inputTexto_2.setReadOnly(True)
+
         self.boton.clicked.connect(self.analizar)
 
     def analizar(self):
+        # Prueba para imprimir
+        #self.inputTexto_2.setText("Error de sintaxis. Declaración de variable inválida.")
         cadena = str(self.inputTexto.toPlainText())
         listaLexico = list()
         i = 0
