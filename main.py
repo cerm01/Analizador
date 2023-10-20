@@ -54,7 +54,8 @@ class Sintactico(object):
             
             row = 0
             #self.tablaResultados.setItem(row, 0, QtWidgets.QTableWidgetItem(str("Hello")))
-            print(f"Error de sintaxis. Se esperaba '{valor_esperado}' en lugar de '{self.listaLexico[self.posicion].obtenercadena()}'")
+            #print(f"Error de sintaxis. Se esperaba '{valor_esperado}' en lugar de '{self.listaLexico[self.posicion].obtenercadena()}'")
+            self.inputTexto_2.setText(f"Error de sintaxis. Se esperaba '{valor_esperado}' en lugar de '{self.listaLexico[self.posicion].obtenercadena()}'")
 
     def declaracion_variable(self):
         if self.listaLexico[self.posicion].obtenercadena() in ["int", "float", "char", "void"]:
@@ -64,6 +65,7 @@ class Sintactico(object):
         else:
             self.error = True
             print("Error de sintaxis. Declaración de variable inválida.")
+            
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -83,10 +85,10 @@ class MainWindow(QMainWindow):
         __qtablewidgetitem = QTableWidgetItem("DESCRIPCIÓN")
         self.tablaResultados.setHorizontalHeaderItem(2, __qtablewidgetitem)
 
-        self.tablaResultados.setColumnWidth(0, 170)
-        self.tablaResultados.setColumnWidth(1, 170)
-        self.tablaResultados.setColumnWidth(2, 227)
-        self.tablaResultados.setGeometry(QRect(20, 310, 570, 300))
+        self.tablaResultados.setColumnWidth(0, 165)
+        self.tablaResultados.setColumnWidth(1, 165)
+        self.tablaResultados.setColumnWidth(2, 180)
+        self.tablaResultados.setGeometry(QRect(20, 310, 560, 300))
 
         self.inputTexto = QTextEdit(self)
         self.inputTexto.setGeometry(QRect(20, 20, 1160, 200))
@@ -100,21 +102,17 @@ class MainWindow(QMainWindow):
         
         #Genera un cuadro en el punto 600, 310 con un tamaño de 570, 300 para salida de texto
         self.inputTexto_2 = QTextEdit(self)
-        self.inputTexto_2.setGeometry(QRect(600, 310, 570, 300))
+        self.inputTexto_2.setGeometry(QRect(610, 310, 560, 300))
         font = QFont()
         font.setPointSize(15)
         self.inputTexto_2.setFont(font)
+        self.inputTexto_2.setReadOnly(True)
 
-        """
-        self.inputTexto_2 = QTextEdit(self)
-        self.inputTexto_2.setGeometry(QRect(560, 20, 380, 250))
-        font = QFont()
-        font.setPointSize(15)
-        self.inputTexto_2.setFont(font)
-        """
         self.boton.clicked.connect(self.analizar)
 
     def analizar(self):
+        # Prueba para imprimir
+        #self.inputTexto_2.setText("Error de sintaxis. Declaración de variable inválida.")
         cadena = str(self.inputTexto.toPlainText())
         listaLexico = list()
         i = 0
