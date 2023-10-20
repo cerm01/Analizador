@@ -103,6 +103,9 @@ class Sintactico(object):
     def analizar_expresion(self):
         pila_operadores = []
         pila_operandos = []
+        operador = ""
+        operand1 = ""
+        operand2 = ""
 
         while self.posicion < len(self.listaLexico):
             if self.listaLexico[self.posicion].obtenertoken() == 1:  # ID
@@ -145,7 +148,7 @@ class Sintactico(object):
                 else:
                     self.error = True
                     print("Error de sintaxis en la expresión matemática.")
-                    self.agregar_error("Error de sintaxis en la expresión matemática.")
+                    self.agregar_error(f"Error de sintaxis en la expresión matemática. {operand1} {operador} {operand2}; " )
                     return None
             else:
                 self.error = True
@@ -385,9 +388,11 @@ class MainWindow(QMainWindow):
         if not analizador_sintactico.error:
             print("Análisis sintáctico completado sin errores.")
 
+        self.inputTexto_2.clear()
         print("Errores sintácticos:")
         for error in analizador_sintactico.errores:
             print(error)
+            self.inputTexto_2.append(error)
 
 
 if __name__ == "__main__":
