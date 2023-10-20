@@ -86,10 +86,10 @@ class MainWindow(QMainWindow):
         self.tablaResultados.setColumnWidth(0, 451)
         self.tablaResultados.setColumnWidth(1, 89)
         self.tablaResultados.setColumnWidth(2, 360)
-        self.tablaResultados.setGeometry(QRect(20, 300, 940, 340))
+        self.tablaResultados.setGeometry(QRect(20, 265, 940, 340))
 
         self.inputTexto = QTextEdit(self)
-        self.inputTexto.setGeometry(QRect(40, 20, 380, 250))
+        self.inputTexto.setGeometry(QRect(20, 20, 1160, 200))
 
         font = QFont()
         font.setPointSize(15)
