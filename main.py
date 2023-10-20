@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.inputTexto.setFont(font)
 
         self.boton = QPushButton("VALIDAR", self)
-        self.boton.setGeometry(QRect(440, 125, 100, 50))
+        self.boton.setGeometry(QRect(550, 240, 100, 50))
 
         """
         self.inputTexto_2 = QTextEdit(self)
