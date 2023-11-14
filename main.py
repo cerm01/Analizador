@@ -202,17 +202,24 @@ class MainWindow(QMainWindow):
         self.tablaResultados.setColumnWidth(1, 165)
         self.tablaResultados.setColumnWidth(2, 180)
         self.tablaResultados.setGeometry(QRect(20, 310, 560, 300))
-
+        # ---------------------------------------------------------------
         self.inputTexto = QTextEdit(self)
-        self.inputTexto.setGeometry(QRect(20, 20, 1160, 200))
+        self.inputTexto.setGeometry(QRect(20, 20, 560, 200))
         font = QFont()
         font.setPointSize(15)
         self.inputTexto.setFont(font)
-
+        #----------------------------------------------------------------
+        self.inputTexto_3 = QTextEdit(self)
+        self.inputTexto_3.setGeometry(QRect(610, 20, 560, 200))
+        font = QFont()
+        font.setPointSize(15)
+        #----------------------------------------------------------------
         self.boton = QPushButton("VALIDAR", self)
         self.boton.setGeometry(QRect(550, 240, 100, 50))
-
-        
+        #----------------------------------------------------------------
+        self.boton_Abrir = QPushButton("ABRIR", self)
+        self.boton_Abrir.setGeometry(QRect(20, 240, 100, 50))
+        #----------------------------------------------------------------      
         #Genera un cuadro en el punto 600, 310 con un tamaño de 570, 300 para salida de texto
         self.inputTexto_2 = QTextEdit(self)
         self.inputTexto_2.setGeometry(QRect(610, 310, 560, 300))
