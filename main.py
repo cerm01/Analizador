@@ -180,6 +180,8 @@ class Sintactico(object):
         # Implementa el análisis del bloque de código dentro del while
 
 
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -219,6 +221,9 @@ class MainWindow(QMainWindow):
         #----------------------------------------------------------------
         self.boton_Abrir = QPushButton("ABRIR", self)
         self.boton_Abrir.setGeometry(QRect(20, 240, 100, 50))
+        #----------------------------------------------------------------
+        self.boton_Guardar = QPushButton("GUARDAR", self)
+        self.boton_Guardar.setGeometry(QRect(150, 240, 100, 50))
         #----------------------------------------------------------------      
         #Genera un cuadro en el punto 600, 310 con un tamaño de 570, 300 para salida de texto
         self.inputTexto_2 = QTextEdit(self)
@@ -228,9 +233,49 @@ class MainWindow(QMainWindow):
         self.inputTexto_2.setFont(font)
         self.inputTexto_2.setReadOnly(True)
 
+        #----------------------------------------------------------------
+        # Conectamos la señal del boton con el metodo analizar
         self.boton.clicked.connect(self.analizar)
+        #----------------------------------------------------------------
+        # Conectamos la señal del boton con el metodo abrirArchivo
+        self.boton_Abrir.clicked.connect(self.abrirArchivo)
+        #----------------------------------------------------------------
+        # Conectamos la señal del boton con el metodo guardarArchivo
+        self.boton_Guardar.clicked.connect(self.guardarArchivo)
+        #----------------------------------------------------------------
+
+    def guardarArchivo(self):
+        # Si y solo si se abierto un archivo con el boton abrir se podra modificar el archivo y guardarlo con el boton guardar es decir como un sobre escribir  
+        if self.inputTexto.toPlainText() != "":
+            # Generar una exploración de archivos para guardar un archivo
+            nombreArchivo, _ = QFileDialog.getSaveFileName(self, "Guardar Archivo", "", "All Files (*);;Python Files (*.py)")
+            # Abrir el archivo en modo escritura
+            archivo = open(nombreArchivo, "w")
+            # Escribir el contenido del cuadro de texto en el archivo
+            archivo.write(self.inputTexto.toPlainText())
+            # Cerrar el archivo
+            archivo.close()
+        else:
+            # Si no se ha abierto un archivo con el boton abrir se mostrara un mensaje de error
+            QMessageBox.warning(self, "Error", "No se ha abierto un archivo", QMessageBox.Ok)
+
+
+    def abrirArchivo(self):
+        # Generar una exploración de archivos para abrir un archivo
+        nombreArchivo, _ = QFileDialog.getOpenFileName(self, "Abrir Archivo", "", "All Files (*);;Python Files (*.py)")
+        # Abrir el archivo en modo lectura
+        archivo = open(nombreArchivo, "r")
+        # Leer todo el contenido del archivo
+        contenido = archivo.read()
+        # Cerrar el archivo
+        archivo.close()
+        # Mostrar el contenido en el cuadro de texto
+        self.inputTexto.setText(contenido)
+
+    
 
     def analizar(self):
+
         # Prueba para imprimir
         #self.inputTexto_2.setText("Error de sintaxis. Declaración de variable inválida.")
         cadena = str(self.inputTexto.toPlainText())
