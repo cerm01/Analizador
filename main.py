@@ -180,7 +180,64 @@ class Sintactico(object):
         # Implementa el análisis del bloque de código dentro del while
 
 
+class semantico(object):
+    def __init__(self, listaLexico):
+        self.listaLexico = listaLexico
+        self.posicion = 0
+        self.error = False
+        self.errores = []
+    
+    def agregar_error(self, mensaje):
+        self.errores.append(mensaje)
 
+    def analizar(self):
+        #Ids no declarados
+        tipoDato = list()
+        ids = list()
+        declarados = list()
+        utilizados = list()
+        # Verficar si en la listaLexico exsite un token 0 (Tipo de dato)
+        for i in range(len(self.listaLexico)):
+            if self.listaLexico[i].obtenertoken() == 0:
+                #Obtener la posicion del token 0 (Tipo de dato) sumar 1 y agregarlo a la lista cadena
+                tipoDato.append(i+1)
+        # Verficar si en la listaLexico exsite un token 1 (ID)
+        for i in range(len(self.listaLexico)):
+            if self.listaLexico[i].obtenertoken() == 1:
+                #Obtener la posicion del token 1 (ID) y agregarlo a la lista ids
+                ids.append(i)
+
+        # Verificar si la lista cadena esta vacia y la de ids no
+        if len(tipoDato) == 0 and len(ids) != 0:
+            # Si es asi mostrar un mensaje de error
+            self.agregar_error("Error semántico: No se ha declarado ninguna variable")
+            self.error = True
+        else:
+            # Comparar la lista tipoDato con la lista ids, si la cadena de la lista ListaLexico en la posicion i de la lista tipoDato es igual a la cadena de la lista ListaLexico en la posicion i de la lista ids
+            for i in range(len(tipoDato)):
+                aux = self.listaLexico[tipoDato[i]].obtenercadena()
+                declarados.append(aux)
+            for i in range (len(ids)):
+                aux2 = self.listaLexico[ids[i]].obtenercadena()
+                utilizados.append(aux2)
+                if aux2 not in declarados:
+                    self.agregar_error("Error semántico: La variable " + aux2 + " no ha sido declarada") 
+                    self.error = True
+
+        # Ids declarados pero no usados
+        for i in range(len(declarados)):
+            aux = declarados[i]
+            # Ver cauntas veces se repite la cadena aux en la lista utilizados
+            contador = utilizados.count(aux)
+            # Si el contador es menor a 2 mostrar un mensaje de error
+            if contador < 2:
+                self.agregar_error("Error semántico: La variable " + aux + " no ha sido usada")
+                self.error = True
+
+        
+
+
+                    
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -215,6 +272,7 @@ class MainWindow(QMainWindow):
         self.inputTexto_3.setGeometry(QRect(610, 20, 560, 200))
         font = QFont()
         font.setPointSize(15)
+        self.inputTexto_3.setFont(font)
         #----------------------------------------------------------------
         self.boton = QPushButton("VALIDAR", self)
         self.boton.setGeometry(QRect(550, 240, 100, 50))
@@ -275,9 +333,6 @@ class MainWindow(QMainWindow):
     
 
     def analizar(self):
-
-        # Prueba para imprimir
-        #self.inputTexto_2.setText("Error de sintaxis. Declaración de variable inválida.")
         cadena = str(self.inputTexto.toPlainText())
         listaLexico = list()
         i = 0
@@ -328,11 +383,21 @@ class MainWindow(QMainWindow):
                     listaLexico.append(tiposDeDato)
             # Si es un digito
             elif cadena[i].isdigit() == True:
+                #Verifcar si este es de tipo entero o flotante
                 while cadena[i].isdigit() == True:
                     cadenaTemp = cadenaTemp + cadena[i]
                     i = i+1
                     if i==size:
                         break
+                if cadena[i] == ".":
+                    cadenaTemp = cadenaTemp + cadena[i]
+                    i = i+1
+                    while cadena[i].isdigit() == True:
+                        cadenaTemp = cadenaTemp + cadena[i]
+                        i = i+1
+                        if i==size:
+                            break
+
                 tiposDeDato = Lexico(cadenaTemp, 13, "Constante")
                 listaLexico.append(tiposDeDato)
             # Si es un caracter de tipo operarador logico    
@@ -432,6 +497,11 @@ class MainWindow(QMainWindow):
             self.tablaResultados.setItem(row, 2, QtWidgets.QTableWidgetItem(str(aux3)))
             row = row + 1
 
+        #Imprimir en consola la listaLexico
+        print("Lista de tokens:")
+        for tiposDeDato in listaLexico:
+            print(tiposDeDato)
+
         # Luego, iniciamos el análisis sintáctico
         analizador_sintactico = Sintactico(listaLexico)
         print("Iniciando análisis sintáctico...") 
@@ -445,6 +515,19 @@ class MainWindow(QMainWindow):
         for error in analizador_sintactico.errores:
             print(error)
             self.inputTexto_2.append(error)
+
+        # Luego, iniciamos el análisis semántico
+        analizador_semantico = semantico(listaLexico)
+        analizador_semantico.analizar()
+
+        if not analizador_semantico.error:
+            self.inputTexto_3.clear()
+            self.inputTexto_3.append("Análisis semántico completado sin errores.")
+        else:
+            self.inputTexto_3.clear()
+            for error in analizador_semantico.errores:
+                self.inputTexto_3.append(error)
+
 
 
 if __name__ == "__main__":
