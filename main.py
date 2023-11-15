@@ -234,7 +234,67 @@ class semantico(object):
                 self.agregar_error("Error semántico: La variable " + aux + " no ha sido usada")
                 self.error = True
 
-        
+        #operadores y operandos incompatibles
+
+        #Recorrre la lista listaLexico en busca del token 17 y lo guarda en una lista la posicion
+        operadores = list()
+        for i in range(len(self.listaLexico)):
+            if self.listaLexico[i].obtenertoken() == 17:
+                operadores.append(i)
+            if self.listaLexico[i].obtenertoken() == 15:
+                operadores.append(i)
+        # Recorrer la lista operadores y verificar si en la posicion guardada en la lista +1 y -1 en la listaLexico es un token 1 (ID) o un token 13 (Constante)    
+        for i in range(len(operadores)):
+            aux = operadores[i]
+            if self.listaLexico[aux-1].obtenertoken() != 1 and self.listaLexico[aux-1].obtenertoken() != 13:
+                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                self.error = True
+            if self.listaLexico[aux+1].obtenertoken() != 1 and self.listaLexico[aux+1].obtenertoken() != 13:
+                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                self.error = True
+            #Verificar que el toke 1 (ID) haya sido declarado como un tipo de dato int o float
+            if self.listaLexico[aux-1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux-1].obtenercadena()
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                                self.error = True
+
+            if self.listaLexico[aux+1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux+1].obtenercadena()
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                                self.error = True
+
+            """
+            if self.listaLexico[aux-1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux-1].obtenercadena()
+                if aux2 in declarados:
+                    # Dar declarados[aux2 -1] para obtener el tipo de dato
+                    aux3 = declarados[aux2 -1]
+                    if aux3 != "int" and aux3 != "float":
+                        self.agregar_error("Error semántico: Operador y operando incompatibles")
+                        self.error = True
+            #Verificar que el toke 1 (ID) haya sido declarado como un tipo de dato int o float
+            if self.listaLexico[aux+1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux+1].obtenercadena()
+                if aux2 in declarados:
+                    # Dar declarados[aux2 -1] para obtener el tipo de dato
+                    aux3 = declarados[aux2 -1]
+                    if aux3 != "int" and aux3 != "float":
+                        self.agregar_error("Error semántico: Operador y operando incompatibles")
+                        self.error = True
+            """
+
 
 
                     
