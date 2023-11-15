@@ -59,9 +59,10 @@ class Sintactico(object):
                 self.agregar_error("Análisis sintáctico completado sin errores.")
                 return
             else:
-                self.error = True
-                print("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
-                self.agregar_error("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
+                #self.error = True
+                #print("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
+                #self.agregar_error("Error de sintaxis. Se esperaba una declaración, una expresión o una estructura de control.")
+                return None
 
     def avanzar(self):
         self.posicion += 1
@@ -151,9 +152,8 @@ class Sintactico(object):
                     self.agregar_error(f"Error de sintaxis en la expresión matemática. {operand1} {operador} {operand2}; " )
                     return None
             else:
-                self.error = True
-                print("Error de sintaxis en la expresión matemática.")
-                self.agregar_error("Error de sintaxis en la expresión matemática.")
+                #self.error = True
+                #self.agregar_error("Error de sintaxis en la expresión matemática.")
                 return None
 
     def precedencia(self, operador):
@@ -275,29 +275,122 @@ class semantico(object):
                                 self.agregar_error("Error semántico: Operador y operando incompatibles")
                                 self.error = True
 
-            """
+        # Operandos
+        operandos = list()
+        
+        for i in range(len(self.listaLexico)):
+            if self.listaLexico[i].obtenertoken() == 14:
+                operandos.append(i)
+            if self.listaLexico[i].obtenertoken() == 16:
+                operandos.append(i)
+        
+        for i in range(len(operandos)):
+            aux = operandos[i]
+            if self.listaLexico[aux-1].obtenertoken() != 1 and self.listaLexico[aux-1].obtenertoken() != 13:
+                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                self.error = True
+            if self.listaLexico[aux+1].obtenertoken() != 1 and self.listaLexico[aux+1].obtenertoken() != 13:
+                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                self.error = True
+
             if self.listaLexico[aux-1].obtenertoken() == 1:
                 aux2 = self.listaLexico[aux-1].obtenercadena()
-                if aux2 in declarados:
-                    # Dar declarados[aux2 -1] para obtener el tipo de dato
-                    aux3 = declarados[aux2 -1]
-                    if aux3 != "int" and aux3 != "float":
-                        self.agregar_error("Error semántico: Operador y operando incompatibles")
-                        self.error = True
-            #Verificar que el toke 1 (ID) haya sido declarado como un tipo de dato int o float
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                                self.error = True
+
             if self.listaLexico[aux+1].obtenertoken() == 1:
                 aux2 = self.listaLexico[aux+1].obtenercadena()
-                if aux2 in declarados:
-                    # Dar declarados[aux2 -1] para obtener el tipo de dato
-                    aux3 = declarados[aux2 -1]
-                    if aux3 != "int" and aux3 != "float":
-                        self.agregar_error("Error semántico: Operador y operando incompatibles")
-                        self.error = True
-            """
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Operador y operando incompatibles")
+                                self.error = True
 
+        # Asignacion de tipos de datos incompatibles
+        asignacion = list()
+        for i in range(len(self.listaLexico)):
+            if self.listaLexico[i].obtenertoken() == 8:
+                asignacion.append(i)
 
+        for i in range(len(asignacion)):
+            aux = asignacion[i]
+            if self.listaLexico[aux-1].obtenertoken() != 1:
+                self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                self.error = True
+            if self.listaLexico[aux+1].obtenertoken() != 1 and self.listaLexico[aux+1].obtenertoken() != 13:
+                self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                self.error = True
 
-                    
+            if self.listaLexico[aux-1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux-1].obtenercadena()
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                                self.error = True
+
+            if self.listaLexico[aux+1].obtenertoken() == 1:
+                aux2 = self.listaLexico[aux+1].obtenercadena()
+                for i in range(len(self.listaLexico)):
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux3 = i - 1
+                        aux3 = self.listaLexico[aux3].obtenercadena()
+                        if aux3 == "int" or aux3 == "float" or aux3 == "char" or aux3 == "void":
+                            if (aux3 != "int") and (aux3 != "float"):
+                                self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                                self.error = True
+
+            if self.listaLexico[aux+1].obtenertoken() == 13:
+                aux2 = self.listaLexico[aux-1].obtenercadena()
+                aux3 = self.listaLexico[aux+1].obtenertoken()
+                
+                if aux3 == 13:
+                    aux3 = self.listaLexico[aux+1].obtenercadena()
+                    #Tratar de convertir una cadena a entero si mandar error trata de convertirla en flotante
+                    try:
+                        aux3 = int(aux3)
+                        tipodedato = "int"
+                    except:
+                        aux3 = float(aux3)  
+                        tipodedato = "float"          
+
+                for i in range(len(self.listaLexico)):
+                    #buscar la posision de aux2 en la lista listaLexico
+                    if aux2 == self.listaLexico[i].obtenercadena():
+                        aux4 = i - 1
+
+                        aux4 = self.listaLexico[aux4].obtenercadena()
+
+                        if aux4 == "int" and tipodedato == "float":
+                            self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                            self.error = True
+                        if aux4 == "float" and tipodedato == "int":
+                            self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                            self.error = True
+
+                """
+                if aux2 == "int" and self.listaLexico[aux-1] != "int":
+                    #verificar si aux3 es un entero si no lo es manda error
+                    self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                    self.error = True
+                if aux2 == "float" and self.listaLexico[aux-1] != "float":
+                    #verificar si aux3 es un flotante
+                    self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
+                    self.error = True
+                """
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
