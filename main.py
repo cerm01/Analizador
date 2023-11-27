@@ -399,17 +399,22 @@ class generador(object):
         r2 = True
         r3 = True
 
-        
+        i = 0
+
         # Recorrer la lista listaLexico en busca del token
-        for i in range(len(self.listaLexico)):
+        while i < len(self.listaLexico):
             posicion_inicial = i
-            for j in range(len(self.listaLexico)):
-                if self.listaLexico[j].obtenertoken() == 2:
-                    posicion_final = j
+            aux = posicion_inicial 
+            
+            while aux < len(self.listaLexico):
+                if self.listaLexico[aux].obtenertoken() == 2:
+                    posicion_final = aux
                     break
+                aux = aux + 1
+            
 
             # Verificar declaracion de variables
-            if self.listaLexico[posicion_inicial].obtenertoken() == 0:
+            if self.listaLexico[i].obtenertoken() == 0:
                 codigo.append("def ")
                 #Verificar que entre posicion_inicial y posicion_final no exista un token 8 (Igual)
                 aux = 0
@@ -425,75 +430,91 @@ class generador(object):
                         break
                 if aux == 0:
                     codigo.append(self.listaLexico[i + 1].obtenercadena())
-                    codigo.append(";")        
-
-                i = posicion_final + 1
+                    codigo.append(";")
                 
 
             # Verificar asignacion de variables
-            if self.listaLexico[posicion_inicial].obtenertoken() == 1:
+            if self.listaLexico[i].obtenertoken() == 1:
                 registro_asignado = ""
                 codigo.append("mov ")
                 # Verificar que entre posicion_inicial y posicion_final no exista un token 14 O 16 (Operador suma o multiplicacion)
+                aux = 0
                 for k in range(posicion_inicial, posicion_final):
                     if self.listaLexico[k].obtenertoken() == 14 or self.listaLexico[k].obtenertoken() == 16:
+                        aux = 1
                     #Ver que registro r1, r2 o r3 esta disponible
                         if r1 == True:
-                            codigo.append("r1, ")
-                            registro_asignado = " r1 "
+                            codigo.append("r1")
+                            registro_asignado = "r1"
                             r1 = False
                         elif r2 == True:
-                            codigo.append("r2, ")
-                            registro_asignado = " r2 "
+                            codigo.append("r2")
+                            registro_asignado = "r2"
                             r2 = False
                         elif r3 == True:
-                            codigo.append("r3, ")
-                            registro_asignado = " r3 "
+                            codigo.append("r3")
+                            registro_asignado = "r3"
                             r3 = False
                         else:
-                            codigo.append("r1, ")
-                            registro_asignado = " r1 "
+                            codigo.append("r1")
+                            registro_asignado = "r1"
                             r1 = False
-                        
+                            
+                        codigo.append(" ")
                         codigo.append(self.listaLexico[i + 2].obtenercadena())
                         codigo.append(";")
 
                         if self.listaLexico[k].obtenertoken() == 14:
                             if self.listaLexico[k].obtenercadena() == "+":
                                 codigo.append("add ")
+                                codigo.append(registro_asignado)
+                                codigo.append(" ")
                                 codigo.append(self.listaLexico[i + 4].obtenercadena())
                                 codigo.append(";")
                             elif self.listaLexico[k].obtenercadena() == "-":
                                 codigo.append("sub ")
+                                codigo.append(registro_asignado)
+                                codigo.append(" ")
                                 codigo.append(self.listaLexico[i + 4].obtenercadena())
                                 codigo.append(";")
+                            
 
                         elif self.listaLexico[k].obtenertoken() == 16:
                             if self.listaLexico[k].obtenercadena() == "*":
                                 codigo.append("mul ")
+                                codigo.append(registro_asignado)
+                                codigo.append(" ")
                                 codigo.append(self.listaLexico[i + 4].obtenercadena())
                                 codigo.append(";")
                             elif self.listaLexico[k].obtenercadena() == "/":
                                 codigo.append("div ")
+                                codigo.append(registro_asignado)
+                                codigo.append(" ")
                                 codigo.append(self.listaLexico[i + 4].obtenercadena())
                                 codigo.append(";")
                         
                         codigo.append("mov ")
                         codigo.append(self.listaLexico[i].obtenercadena())
+                        codigo.append(" ")
                         codigo.append(registro_asignado)
                         codigo.append(";")
+                        break
                             
-                    else:
-                        codigo.append(self.listaLexico[i].obtenercadena())
-                        codigo.append(self.listaLexico[i + 2].obtenercadena())
-                        codigo.append(";")
+                if aux == 0:
+                    codigo.append(self.listaLexico[i].obtenercadena())
+                    codigo.append(" ")
+                    codigo.append(self.listaLexico[i + 2].obtenercadena())
+                    codigo.append(";")
 
-                i = posicion_final + 1
+            i = posicion_final + 1
                 
         
         # Mostrar lista codigo con un salto de linea en cada " ; "
         for i in range(len(codigo)):
-            print(codigo[i])
+            if codigo[i] == ";":
+                print(codigo[i])
+            else:
+                print(codigo[i], end="")
             
 
                 
