@@ -380,16 +380,128 @@ class semantico(object):
                             self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
                             self.error = True
 
-                """
-                if aux2 == "int" and self.listaLexico[aux-1] != "int":
-                    #verificar si aux3 es un entero si no lo es manda error
-                    self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
-                    self.error = True
-                if aux2 == "float" and self.listaLexico[aux-1] != "float":
-                    #verificar si aux3 es un flotante
-                    self.agregar_error("Error semántico: Asignación de tipos de datos incompatibles")
-                    self.error = True
-                """
+class generador(object):
+    def __init__(self, listaLexico):
+        self.listaLexico = listaLexico
+        self.posicion = 0
+
+
+    def analizar(self):
+        #Ids no declarados
+        tipoDato = list()
+        ids = list()
+        codigo = list()
+
+        posicion_inicial = 0
+        posicion_final = 0
+
+        r1 = True
+        r2 = True
+        r3 = True
+
+        
+        # Recorrer la lista listaLexico en busca del token
+        for i in range(len(self.listaLexico)):
+            posicion_inicial = i
+            for j in range(len(self.listaLexico)):
+                if self.listaLexico[j].obtenertoken() == 2:
+                    posicion_final = j
+                    break
+
+            # Verificar declaracion de variables
+            if self.listaLexico[posicion_inicial].obtenertoken() == 0:
+                codigo.append("def ")
+                #Verificar que entre posicion_inicial y posicion_final no exista un token 8 (Igual)
+                aux = 0
+                for k in range(posicion_inicial, posicion_final):
+                    if self.listaLexico[k].obtenertoken() == 8:
+                        aux = 1
+                        codigo.append(self.listaLexico[i + 1].obtenercadena())
+                        codigo.append(";")
+                        codigo.append("mov ")
+                        codigo.append(self.listaLexico[i + 1].obtenercadena())
+                        codigo.append(self.listaLexico[i + 3].obtenercadena())   
+                        codigo.append(";")
+                        break
+                if aux == 0:
+                    codigo.append(self.listaLexico[i + 1].obtenercadena())
+                    codigo.append(";")        
+
+                i = posicion_final + 1
+                
+
+            # Verificar asignacion de variables
+            if self.listaLexico[posicion_inicial].obtenertoken() == 1:
+                registro_asignado = ""
+                codigo.append("mov ")
+                # Verificar que entre posicion_inicial y posicion_final no exista un token 14 O 16 (Operador suma o multiplicacion)
+                for k in range(posicion_inicial, posicion_final):
+                    if self.listaLexico[k].obtenertoken() == 14 or self.listaLexico[k].obtenertoken() == 16:
+                    #Ver que registro r1, r2 o r3 esta disponible
+                        if r1 == True:
+                            codigo.append("r1, ")
+                            registro_asignado = " r1 "
+                            r1 = False
+                        elif r2 == True:
+                            codigo.append("r2, ")
+                            registro_asignado = " r2 "
+                            r2 = False
+                        elif r3 == True:
+                            codigo.append("r3, ")
+                            registro_asignado = " r3 "
+                            r3 = False
+                        else:
+                            codigo.append("r1, ")
+                            registro_asignado = " r1 "
+                            r1 = False
+                        
+                        codigo.append(self.listaLexico[i + 2].obtenercadena())
+                        codigo.append(";")
+
+                        if self.listaLexico[k].obtenertoken() == 14:
+                            if self.listaLexico[k].obtenercadena() == "+":
+                                codigo.append("add ")
+                                codigo.append(self.listaLexico[i + 4].obtenercadena())
+                                codigo.append(";")
+                            elif self.listaLexico[k].obtenercadena() == "-":
+                                codigo.append("sub ")
+                                codigo.append(self.listaLexico[i + 4].obtenercadena())
+                                codigo.append(";")
+
+                        elif self.listaLexico[k].obtenertoken() == 16:
+                            if self.listaLexico[k].obtenercadena() == "*":
+                                codigo.append("mul ")
+                                codigo.append(self.listaLexico[i + 4].obtenercadena())
+                                codigo.append(";")
+                            elif self.listaLexico[k].obtenercadena() == "/":
+                                codigo.append("div ")
+                                codigo.append(self.listaLexico[i + 4].obtenercadena())
+                                codigo.append(";")
+                        
+                        codigo.append("mov ")
+                        codigo.append(self.listaLexico[i].obtenercadena())
+                        codigo.append(registro_asignado)
+                        codigo.append(";")
+                            
+                    else:
+                        codigo.append(self.listaLexico[i].obtenercadena())
+                        codigo.append(self.listaLexico[i + 2].obtenercadena())
+                        codigo.append(";")
+
+                i = posicion_final + 1
+                
+        
+        # Mostrar lista codigo con un salto de linea en cada " ; "
+        for i in range(len(codigo)):
+            print(codigo[i])
+            
+
+                
+
+
+                
+        
+
 
 
 class MainWindow(QMainWindow):
@@ -673,9 +785,14 @@ class MainWindow(QMainWindow):
         analizador_semantico = semantico(listaLexico)
         analizador_semantico.analizar()
 
+        generador_codigo = generador(listaLexico)
+
+
         if not analizador_semantico.error:
             self.inputTexto_3.clear()
             self.inputTexto_3.append("Análisis semántico completado sin errores.")
+            generador_codigo.analizar()
+
         else:
             self.inputTexto_3.clear()
             for error in analizador_semantico.errores:
